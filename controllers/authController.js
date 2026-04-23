@@ -20,16 +20,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-transporter.verify((error, success)=>{
-    if(error){
-        console.log(error);
 
-    }else{
-        console.log("Ready for message");
-        console.log(success);
-
-    }
-})
 
 /* ================= SIGNUP ================= */
 const signup = async (req, res) => {
@@ -307,10 +298,10 @@ const verifyOTP = async (req, res) => {
 const googleLogin = async (req, res) => {
   const { name, email } = req.body;
 
-  let user = await User.findOne({ email });
+  let user = await userModel.findOne({ email });
 
   if (!user)
-    user = await User.create({ name, email, isVerified: true });
+    user = await userModel.create({ name, email, isVerified: true });
 
   res.json({ token: generateToken(user._id) });
 };
@@ -356,7 +347,7 @@ const resendOtp = async (req, res) => {
       service: "gmail",
       auth: {
         user: process.env.EMAIL,
-        pass: process.env.EMAIL_PASSWORD,
+        pass: process.env.EMAIL_PASS,
       },
     });
 
