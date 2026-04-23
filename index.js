@@ -11,7 +11,7 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
-connectDB()
+await connectDB()
 
 app.get("/", (req, res) => {
   res.send("Backend is running 🚀");
