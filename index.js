@@ -16,7 +16,7 @@ await connectDB()
 app.get("/", (req, res) => {
   res.send("Backend is running 🚀");
 });
-app.use("/api/auth",authRouter)
+// app.use("/api/auth",authRouter)
 app.use("/api/trips", tripRoutes);
 app.use("/api/contact", contactRouter);
 
