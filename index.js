@@ -5,11 +5,13 @@ const connectDB = require("./db");
 const contactRouter = require("./routes/contactRouter");
 const tripRoutes = require("./routes/tripRouter");
 const authRouter = require("./routes/authRouter");
+const bodyParser = require("body-parser");
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.use(bodyParser.json());
 connectDB();
 
 app.use(express.json({ limit: "500mb" }));
