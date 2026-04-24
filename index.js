@@ -1,5 +1,4 @@
 const express = require("express")
-const mongoose = require("mongoose")
 require("dotenv").config()
 const cors = require("cors");
 const connectDB = require("./db");
@@ -20,10 +19,11 @@ app.use("/api/auth",authRouter)
 app.use("/api/trips", tripRoutes);
 app.use("/api/contact", contactRouter);
 
-app.get("/api/trips", (req, res) => {
-  res.json({ message: "Trips fetched" });
+
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => {
+  console.log("Server running on port " + PORT);
 });
-
-
 
 module.exports= app

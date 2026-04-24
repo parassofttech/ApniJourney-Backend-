@@ -1,9 +1,10 @@
 const express = require("express");
 const {  login, signup, verifyOTP, googleLogin, resendOtp, users, deleteUser, blockUser } = require("../controllers/authController");
 const { signupValidation, loginValidation } = require("../middleware/authMiddleware");
+const verifyEmailMiddleware = require("../middleware/verifyEmailMiddleware");
 
 
-const verifyEmailMiddleware = require("../middleware/veryifyEmailMiddleware");
+
 
 const authRouter = express.Router();
 
