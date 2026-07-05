@@ -6,6 +6,7 @@ const contactRouter = require("./routes/contactRouter");
 const tripRoutes = require("./routes/tripRouter");
 const authRouter = require("./routes/authRouter");
 const bodyParser = require("body-parser");
+const commentRouter = require("./routes/commentRouter");
 
 const app = express();
 
@@ -23,6 +24,7 @@ app.get("/", (req, res) => {
 app.use("/api/auth",authRouter)
 app.use("/api/trips", tripRoutes);
 app.use("/api/contact", contactRouter);
+app.use("/api/comments", commentRouter);
 
 
 const PORT = process.env.PORT || 5000;
