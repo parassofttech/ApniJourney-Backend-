@@ -5,18 +5,21 @@ const addComment = async (req, res) => {
   try {
     const { tripId } = req.params;
     const { text } = req.body;
+    
+    // Check karein ki user exist karta hai
+    if (!req.user) {
+      return res.status(401).json({ message: "User not authenticated" });
+    }
 
     const comment = await Comment.create({
       trip: tripId,
-      user: req.user.id,
+      user: req.user._id, // .id ki jagah ._id try karein
       text,
     });
 
     res.status(201).json(comment);
   } catch (err) {
-    res.status(500).json({
-      message: err.message,
-    });
+    res.status(500).json({ message: err.message });
   }
 };
 
