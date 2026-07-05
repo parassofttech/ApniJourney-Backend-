@@ -20,7 +20,16 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+transporter.verify(function (error, success) {
+  if (error) {
+    console.log("MAIL ERROR =>", error);
+  } else {
+    console.log("Mail Server Ready");
+  }
+});
 
+console.log("EMAIL =", process.env.EMAIL);
+console.log("EMAIL_PASS =", process.env.EMAIL_PASS ? "FOUND" : "MISSING");
 
 /* ================= SIGNUP ================= */
 const signup = async (req, res) => {
@@ -155,6 +164,7 @@ const signup = async (req, res) => {
 </html>
 `,
     });
+    console.log("OTP Sent Successfully");
 
     return res.status(200).json({
       success: true,
@@ -166,7 +176,7 @@ const signup = async (req, res) => {
 
     return res.status(500).json({
       success: false,
-      message: "Internal server error",
+      message: err.message,
     });
   }
 };

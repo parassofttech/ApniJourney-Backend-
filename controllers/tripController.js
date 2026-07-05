@@ -10,6 +10,7 @@ const createTrip = async (req, res) => {
     }
 
     const {
+      name,
       title,
       destination,
       category,
@@ -23,6 +24,7 @@ const createTrip = async (req, res) => {
     } = req.body;
 
     const trip = new TripModel({
+      name,
       title,
       destination,
       category,
