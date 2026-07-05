@@ -4,7 +4,7 @@ const commentSchema = new mongoose.Schema(
   {
     trip: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Trip",
+      ref: "trips",
       required: true,
     },
 
@@ -13,7 +13,7 @@ const commentSchema = new mongoose.Schema(
       ref: "users",
       required: true,
     },
-    
+
     text: {
       type: String,
       required: true,
