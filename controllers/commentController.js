@@ -5,7 +5,7 @@ const addComment = async (req, res) => {
   try {
     const { tripId } = req.params;
     const { text,name } = req.body;
-    const 
+    
     
     // Check karein ki user exist karta hai
     if (!req.user) {
