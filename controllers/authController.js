@@ -3,34 +3,12 @@ const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 const userModel = require("../models/auth");
 
-const nodemailer = require('nodemailer')
-const {v4: uuidv4} = require('uuid');
-
+// 1. Resend ko import karein (Nodemailer ki jagah)
+const { Resend } = require('resend');
 require("dotenv").config();
 
-
-
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 587,
-  secure: false, 
-  auth: {
-    user: "apnijourneyin@gmail.com" ,
-    pass: "mvbvyckvicbnozdr",
-  },
-});
-
-//
-// transporter.verify(function (error, success) {
-//   if (error) {
-//     console.log("MAIL ERROR =>", error);
-//   } else {
-//     console.log("Mail Server Ready");
-//   }
-// });
-
-console.log("EMAIL =", process.env.EMAIL);
-console.log("EMAIL_PASS =", process.env.EMAIL_PASS ? "FOUND" : "MISSING");
+// 2. Resend ko initialize karein
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 /* ================= SIGNUP ================= */
 const signup = async (req, res) => {
@@ -47,7 +25,6 @@ const signup = async (req, res) => {
 
     // ✅ Check if Email Already Exists
     const existingUser = await userModel.findOne({ email });
-
     if (existingUser) {
       return res.status(400).json({
         success: false,
@@ -61,7 +38,7 @@ const signup = async (req, res) => {
     // ✅ Generate OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-    // ✅ Save User with OTP Expiry (2 minutes example)
+    // ✅ Save User to Database
     await userModel.create({
       name,
       email,
@@ -70,36 +47,29 @@ const signup = async (req, res) => {
       otpExpire: Date.now() + 10 * 60 * 1000, // 10 minutes expiry
     });
 
-    // ✅ Send Email
-    await transporter.sendMail({
-      from: '"ApniJourney" <apnijourneyin@gmail.com>',
+    // ✅ Send Email Using Resend API
+    await resend.emails.send({
+      from: 'TripMate <onboarding@resend.dev>', // Free tier mein yehi sender address rahega
       to: email,
       subject: "OTP Verification",
-     html: `
+      html: `
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8" />
 </head>
 <body style="margin:0; padding:0; background:#f4f6f8; font-family:Arial, sans-serif;">
-
   <table width="100%" cellpadding="0" cellspacing="0" style="padding:40px 0;">
     <tr>
       <td align="center">
-
         <!-- Main Card -->
-        <table width="500" cellpadding="0" cellspacing="0" 
-          style="background:#ffffff; border-radius:12px; padding:40px; box-shadow:0 8px 25px rgba(0,0,0,0.08);">
-
-          <!-- Logo / Brand -->
+        <table width="500" cellpadding="0" cellspacing="0" style="background:#ffffff; border-radius:12px; padding:40px; box-shadow:0 8px 25px rgba(0,0,0,0.08);">
           <tr>
             <td align="center" style="padding-bottom:20px;">
               <h1 style="margin:0; color:#4f46e5;">TripMate</h1>
               <p style="color:#888; margin-top:5px;">Email Verification</p>
             </td>
           </tr>
-
-          <!-- Heading -->
           <tr>
             <td style="padding-bottom:20px;">
               <h2 style="margin:0; color:#111;">Verify Your Email Address</h2>
@@ -108,65 +78,35 @@ const signup = async (req, res) => {
               </p>
             </td>
           </tr>
-
-          <!-- OTP Box -->
           <tr>
             <td align="center" style="padding:25px 0;">
-              <div style="
-                display:inline-block;
-                padding:15px 40px;
-                background:linear-gradient(135deg,#6366f1,#4f46e5);
-                color:#ffffff;
-                font-size:28px;
-                letter-spacing:6px;
-                border-radius:8px;
-                font-weight:bold;
-              ">
+              <div style="display:inline-block; padding:15px 40px; background:linear-gradient(135deg,#6366f1,#4f46e5); color:#ffffff; font-size:28px; letter-spacing:6px; border-radius:8px; font-weight:bold;">
                 ${otp}
               </div>
             </td>
           </tr>
-
-           <!-- Expiry -->
-            <tr>
+          <tr>
              <td align="center" style="padding-bottom:20px;">
-               <p style="color:#dc2626; font-size:14px; margin:0;">
-                 ⏳ This OTP will expire in 10 minutes.
-               </p>
+               <p style="color:#dc2626; font-size:14px; margin:0;">⏳ This OTP will expire in 10 minutes.</p>
             </td>
-           </tr>
-
-          <!-- Security Note -->
+          </tr>
           <tr>
             <td style="padding-top:10px;">
               <p style="color:#666; font-size:13px; line-height:1.6;">
-                🔐 For your security, do not share this OTP with anyone. 
-                If you did not request this verification, please ignore this email.
+                🔐 For your security, do not share this OTP with anyone.
               </p>
             </td>
           </tr>
-
-          <!-- Footer -->
-          <tr>
-            <td align="center" style="padding-top:30px; font-size:12px; color:#999;">
-              <hr style="border:none; border-top:1px solid #eee; margin-bottom:15px;" />
-              © ${new Date().getFullYear()} TripMate. All rights reserved.
-            </td>
-          </tr>
-
         </table>
-        <!-- End Card -->
-
       </td>
     </tr>
   </table>
-
 </body>
 </html>
 `,
     });
-    console.log("OTP Sent Successfully");
 
+    console.log("OTP Sent Successfully via Resend");
     return res.status(200).json({
       success: true,
       message: "OTP Sent Successfully",
@@ -174,13 +114,14 @@ const signup = async (req, res) => {
 
   } catch (err) {
     console.error(err);
-
     return res.status(500).json({
       success: false,
       message: err.message,
     });
   }
 };
+
+module.exports = { signup };
 
 /* ================= LOGIN ================= */
 
