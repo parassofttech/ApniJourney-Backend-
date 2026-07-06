@@ -49,7 +49,7 @@ const signup = async (req, res) => {
 
     // ✅ Send Email Using Resend API
     await resend.emails.send({
-      from: 'TripMate <onboarding@resend.dev>', // Free tier mein yehi sender address rahega
+      from: 'ApniJourney <apnijourneyin@gmail.com>', // Free tier mein yehi sender address rahega
       to: email,
       subject: "OTP Verification",
       html: `
@@ -59,17 +59,24 @@ const signup = async (req, res) => {
   <meta charset="UTF-8" />
 </head>
 <body style="margin:0; padding:0; background:#f4f6f8; font-family:Arial, sans-serif;">
+
   <table width="100%" cellpadding="0" cellspacing="0" style="padding:40px 0;">
     <tr>
       <td align="center">
+
         <!-- Main Card -->
-        <table width="500" cellpadding="0" cellspacing="0" style="background:#ffffff; border-radius:12px; padding:40px; box-shadow:0 8px 25px rgba(0,0,0,0.08);">
+        <table width="500" cellpadding="0" cellspacing="0" 
+          style="background:#ffffff; border-radius:12px; padding:40px; box-shadow:0 8px 25px rgba(0,0,0,0.08);">
+
+          <!-- Logo / Brand -->
           <tr>
             <td align="center" style="padding-bottom:20px;">
               <h1 style="margin:0; color:#4f46e5;">TripMate</h1>
               <p style="color:#888; margin-top:5px;">Email Verification</p>
             </td>
           </tr>
+
+          <!-- Heading -->
           <tr>
             <td style="padding-bottom:20px;">
               <h2 style="margin:0; color:#111;">Verify Your Email Address</h2>
@@ -78,29 +85,59 @@ const signup = async (req, res) => {
               </p>
             </td>
           </tr>
+
+          <!-- OTP Box -->
           <tr>
             <td align="center" style="padding:25px 0;">
-              <div style="display:inline-block; padding:15px 40px; background:linear-gradient(135deg,#6366f1,#4f46e5); color:#ffffff; font-size:28px; letter-spacing:6px; border-radius:8px; font-weight:bold;">
+              <div style="
+                display:inline-block;
+                padding:15px 40px;
+                background:linear-gradient(135deg,#6366f1,#4f46e5);
+                color:#ffffff;
+                font-size:28px;
+                letter-spacing:6px;
+                border-radius:8px;
+                font-weight:bold;
+              ">
                 ${otp}
               </div>
             </td>
           </tr>
-          <tr>
+
+           <!-- Expiry -->
+            <tr>
              <td align="center" style="padding-bottom:20px;">
-               <p style="color:#dc2626; font-size:14px; margin:0;">⏳ This OTP will expire in 10 minutes.</p>
+               <p style="color:#dc2626; font-size:14px; margin:0;">
+                 ⏳ This OTP will expire in 10 minutes.
+               </p>
             </td>
-          </tr>
+           </tr>
+
+          <!-- Security Note -->
           <tr>
             <td style="padding-top:10px;">
               <p style="color:#666; font-size:13px; line-height:1.6;">
-                🔐 For your security, do not share this OTP with anyone.
+                🔐 For your security, do not share this OTP with anyone. 
+                If you did not request this verification, please ignore this email.
               </p>
             </td>
           </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td align="center" style="padding-top:30px; font-size:12px; color:#999;">
+              <hr style="border:none; border-top:1px solid #eee; margin-bottom:15px;" />
+              © ${new Date().getFullYear()} TripMate. All rights reserved.
+            </td>
+          </tr>
+
         </table>
+        <!-- End Card -->
+
       </td>
     </tr>
   </table>
+
 </body>
 </html>
 `,
