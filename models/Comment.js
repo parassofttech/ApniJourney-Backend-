@@ -2,6 +2,10 @@ const mongoose = require("mongoose")
 
 const commentSchema = new mongoose.Schema(
   {
+    name:{
+          type: String,
+      required: true,
+    },
     trip: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "trips",
@@ -19,6 +23,7 @@ const commentSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+
   },
   {
     timestamps: true,

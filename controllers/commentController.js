@@ -4,7 +4,8 @@ const Comment = require("../models/Comment");
 const addComment = async (req, res) => {
   try {
     const { tripId } = req.params;
-    const { text } = req.body;
+    const { text,name } = req.body;
+    const 
     
     // Check karein ki user exist karta hai
     if (!req.user) {
@@ -15,6 +16,7 @@ const addComment = async (req, res) => {
       trip: tripId,
       user: req.user._id, // .id ki jagah ._id try karein
       text,
+      name,
     });
 
     res.status(201).json(comment);
