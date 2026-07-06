@@ -8,7 +8,7 @@ const { Resend } = require('resend');
 require("dotenv").config();
 
 // 2. Resend ko initialize karein
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = new Resend(process.env.RESEND_API_KEY||" re_X3phJsEw_DGNAvBTYpSMmhwRoPTf69K36");
 
 /* ================= SIGNUP ================= */
 const signup = async (req, res) => {
@@ -49,7 +49,7 @@ const signup = async (req, res) => {
 
     // ✅ Send Email Using Resend API
     await resend.emails.send({
-      from: 'ApniJourney <apnijourneyin@gmail.com>', // Free tier mein yehi sender address rahega
+      from: 'ApniJourney <noreply@apnijourney.com>', // Free tier mein yehi sender address rahega
       to: email,
       subject: "OTP Verification",
       html: `
@@ -71,7 +71,7 @@ const signup = async (req, res) => {
           <!-- Logo / Brand -->
           <tr>
             <td align="center" style="padding-bottom:20px;">
-              <h1 style="margin:0; color:#4f46e5;">TripMate</h1>
+              <h1 style="margin:0; color:#4f46e5;">ApniJourney</h1>
               <p style="color:#888; margin-top:5px;">Email Verification</p>
             </td>
           </tr>
@@ -127,7 +127,7 @@ const signup = async (req, res) => {
           <tr>
             <td align="center" style="padding-top:30px; font-size:12px; color:#999;">
               <hr style="border:none; border-top:1px solid #eee; margin-bottom:15px;" />
-              © ${new Date().getFullYear()} TripMate. All rights reserved.
+              © ${new Date().getFullYear()} ApniJourney. All rights reserved.
             </td>
           </tr>
 
@@ -301,6 +301,7 @@ const resendOtp = async (req, res) => {
   try {
     const { email } = req.body;
 
+    // ✅ Basic Validation
     if (!email) {
       return res.status(400).json({
         success: false,
@@ -308,8 +309,8 @@ const resendOtp = async (req, res) => {
       });
     }
 
+    // ✅ Check if User Exists
     const user = await userModel.findOne({ email });
-
     if (!user) {
       return res.status(404).json({
         success: false,
@@ -317,6 +318,7 @@ const resendOtp = async (req, res) => {
       });
     }
 
+    // ✅ Check if Already Verified
     if (user.emailVerified) {
       return res.status(400).json({
         success: false,
@@ -327,41 +329,79 @@ const resendOtp = async (req, res) => {
     // ✅ Generate New OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
+    // ✅ Update User Database (Fixed to 10 Minutes Expiry)
     user.otp = otp;
-    user.otpExpire = Date.now() + 1 * 60 * 1000; // 10 min expiry
+    user.otpExpire = Date.now() + 10 * 60 * 1000; // Sahi 10 minutes ka time set kiya
     await user.save();
 
-    // ✅ Send Email
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.EMAIL,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
-
-    await transporter.sendMail({
-      from: process.env.EMAIL,
+    // ✅ Send Email Using Resend API (No Nodemailer)
+    await resend.emails.send({
+      from: 'ApniJourney <noreply@apnijourney.com>', // <-- Yahan apna verified domain naam hi likhna
       to: email,
       subject: "Resend OTP Verification",
       html: `
-        <div style="font-family:sans-serif;">
-          <h2>Your New OTP Code</h2>
-          <p>Your OTP is:</p>
-          <h1 style="letter-spacing:4px;">${otp}</h1>
-          <p>This OTP will expire in 10 minutes.</p>
-        </div>
-      `,
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+</head>
+<body style="margin:0; padding:0; background:#f4f6f8; font-family:Arial, sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="padding:40px 0;">
+    <tr>
+      <td align="center">
+        <!-- Main Card -->
+        <table width="500" cellpadding="0" cellspacing="0" style="background:#ffffff; border-radius:12px; padding:40px; box-shadow:0 8px 25px rgba(0,0,0,0.08);">
+          <tr>
+            <td align="center" style="padding-bottom:20px;">
+              <h1 style="margin:0; color:#4f46e5;">ApniJourney</h1>
+              <p style="color:#888; margin-top:5px;">Resend Verification Code</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding-bottom:20px;">
+              <h2 style="margin:0; color:#111;">Your New OTP Code</h2>
+              <p style="color:#555; font-size:14px; margin-top:10px;">
+                As requested, here is your new verification code. Please use this OTP to secure your account.
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td align="center" style="padding:25px 0;">
+              <div style="display:inline-block; padding:15px 40px; background:linear-gradient(135deg,#6366f1,#4f46e5); color:#ffffff; font-size:28px; letter-spacing:6px; border-radius:8px; font-weight:bold;">
+                ${otp}
+              </div>
+            </td>
+          </tr>
+          <tr>
+             <td align="center" style="padding-bottom:20px;">
+               <p style="color:#dc2626; font-size:14px; margin:0;">⏳ This OTP will expire in 10 minutes.</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding-top:10px;">
+              <p style="color:#666; font-size:13px; line-height:1.6;">
+                🔐 For your security, do not share this OTP with anyone.
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+`,
     });
 
-    res.status(200).json({
+    console.log("Resend OTP Sent Successfully via Resend");
+    return res.status(200).json({
       success: true,
       message: "OTP resent successfully",
     });
 
   } catch (error) {
-    console.error(error);
-    res.status(500).json({
+    console.error("Resend OTP Error:", error);
+    return res.status(500).json({
       success: false,
       message: "Server error",
     });
