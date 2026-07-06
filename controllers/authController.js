@@ -11,23 +11,22 @@ require("dotenv").config();
 
 
 const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
-  family: 4,
+  host: "smtp-relay.brevo.com",
+  port: 587,
+  secure: false, 
   auth: {
-    user: process.env.EMAIL,
+    user: process.env.EMAIL ,
     pass: process.env.EMAIL_PASS,
   },
 });
 
-transporter.verify(function (error, success) {
-  if (error) {
-    console.log("MAIL ERROR =>", error);
-  } else {
-    console.log("Mail Server Ready");
-  }
-});
+// transporter.verify(function (error, success) {
+//   if (error) {
+//     console.log("MAIL ERROR =>", error);
+//   } else {
+//     console.log("Mail Server Ready");
+//   }
+// });
 
 console.log("EMAIL =", process.env.EMAIL);
 console.log("EMAIL_PASS =", process.env.EMAIL_PASS ? "FOUND" : "MISSING");
@@ -72,7 +71,7 @@ const signup = async (req, res) => {
 
     // ✅ Send Email
     await transporter.sendMail({
-      from: process.env.EMAIL,
+      from: '"ApniJourney" <apnijourneyin@gmail.com>',
       to: email,
       subject: "OTP Verification",
      html: `
