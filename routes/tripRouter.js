@@ -11,7 +11,7 @@ const tripRoutes = express.Router();
 
 //  Create new trip
 tripRoutes.post( "/",
-  ensureAuthenticated,
+  verifyToken,
   upload.array("photos", 10),
   createTrip);
 
