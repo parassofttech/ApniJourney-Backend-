@@ -1,10 +1,9 @@
 const express = require("express");
-const { createTrip, getTrips, getTripById, updateTrip, deleteTrip, viewTrips } = require("../controllers/tripController");
+const { createTrip, getTrips, getTripById, updateTrip, deleteTrip, viewTrips, likeTrip } = require("../controllers/tripController");
 const verifyTokens = require("../middleware/verifyToken");
 const verifyToken = require("../middleware/verifyToken");
 const upload = require("../middleware/upload.");
-// const createMiddleware = require("../middleware/createMiddleware");
-// const authMiddleware = require("../middleware/createMiddleware");
+
 
 
 const tripRoutes = express.Router();
@@ -15,8 +14,10 @@ tripRoutes.post( "/",
   upload.array("photos", 10),
   createTrip);
 
+  tripRoutes.post("/:id/like", verifyToken, likeTrip);
+
 //  Get all trips
-// router.get("/", getAllTrips);
+
 
 tripRoutes.get('/',verifyToken, getTrips);
 

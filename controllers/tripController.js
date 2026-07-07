@@ -209,5 +209,53 @@ const addDocument = async (req, res) => {
   }
 };
 
+const likeTrip = async (req, res) => {
 
-module.exports = {createTrip, getTrips ,getTripById, updateTrip,deleteTrip,addExpense,addDocument,viewTrips}
+    try {
+
+        const trip = await Trip.findById(req.params.id);
+
+        if (!trip) {
+            return res.status(404).json({
+                message: "Trip not found"
+            });
+        }
+
+        const userId = req.user.id;
+
+        const alreadyLiked = trip.likes.includes(userId);
+
+        if (alreadyLiked) {
+
+            trip.likes.pull(userId);
+
+        } else {
+
+            trip.likes.push(userId);
+
+        }
+
+        await trip.save();
+
+        res.json({
+
+            success: true,
+
+            liked: !alreadyLiked,
+
+            likes: trip.likes.length
+
+        });
+
+    } catch (err) {
+
+        res.status(500).json({
+            message: err.message
+        });
+
+    }
+
+};
+
+
+module.exports = {createTrip, getTrips ,getTripById, updateTrip,deleteTrip,addExpense,addDocument,viewTrips, likeTrip}
