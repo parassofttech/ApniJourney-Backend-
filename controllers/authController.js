@@ -285,14 +285,47 @@ const verifyOTP = async (req, res) => {
 //   Direct Google Login
 
 const googleLogin = async (req, res) => {
-  const { name, email } = req.body;
+  try {
+    const { name, email } = req.body;
 
-  let user = await userModel.findOne({ email });
+    if (!name || !email) {
+      return res.status(400).json({
+        success: false,
+        message: "Name and email are required",
+      });
+    }
 
-  if (!user)
-    user = await userModel.create({ name, email, isVerified: true });
+    let user = await userModel.findOne({ email });
 
-  res.json({ token: generateToken(user._id) });
+    if (!user) {
+      user = await userModel.create({
+        name,
+        email,
+        isVerified: true,
+        provider: "google",
+      });
+    }
+
+    const token = generateToken(user._id);
+
+    res.status(200).json({
+      success: true,
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+      },
+    });
+
+  } catch (error) {
+    console.log("Google Login Error:", error);
+
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 };
 
 
