@@ -1,11 +1,29 @@
-const TripModel = require("../models/Trip")
+const TripModel = require("../models/Trip");
+const cloudinary = require("../config/cloudinary");
+const streamifier = require("streamifier");
+
+const uploadToCloudinary = (buffer) => {
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      {
+        folder: "ApniJourney",
+      },
+      (error, result) => {
+        if (error) return reject(error);
+        resolve(result.secure_url);
+      }
+    );
+
+    streamifier.createReadStream(buffer).pipe(stream);
+  });
+};
 
 const createTrip = async (req, res) => {
   try {
     if (!req.user || !req.user._id) {
       return res.status(401).json({
         success: false,
-        message: "User not authorized"
+        message: "User not authorized",
       });
     }
 
@@ -16,41 +34,46 @@ const createTrip = async (req, res) => {
       category,
       startDate,
       endDate,
-      description,
-      notes,
       budget,
       rating,
-      photos
+      description,
+      notes,
     } = req.body;
 
-    const trip = new TripModel({
+    let photoUrls = [];
+
+    if (req.files && req.files.length > 0) {
+      photoUrls = await Promise.all(
+        req.files.map((file) => uploadToCloudinary(file.buffer))
+      );
+    }
+
+    const trip = await TripModel.create({
       name,
       title,
       destination,
       category,
       startDate,
       endDate,
-      description,
-      notes,
       budget,
       rating,
-      photos,
-      userId: req.user._id, // ✅ FIXED
+      description,
+      notes,
+      photos: photoUrls,
+      userId: req.user._id,
     });
-
-    await trip.save();
 
     res.status(201).json({
       success: true,
       message: "Trip created successfully",
-      trip
+      trip,
     });
-
   } catch (error) {
-    console.error("Error creating trip:", error);
+    console.error(error);
+
     res.status(500).json({
       success: false,
-      message: "Failed to create trip"
+      message: error.message,
     });
   }
 };

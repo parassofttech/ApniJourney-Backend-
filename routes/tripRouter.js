@@ -2,6 +2,7 @@ const express = require("express");
 const { createTrip, getTrips, getTripById, updateTrip, deleteTrip, viewTrips } = require("../controllers/tripController");
 const verifyTokens = require("../middleware/verifyToken");
 const verifyToken = require("../middleware/verifyToken");
+const upload = require("../middleware/upload.");
 // const createMiddleware = require("../middleware/createMiddleware");
 // const authMiddleware = require("../middleware/createMiddleware");
 
@@ -9,7 +10,10 @@ const verifyToken = require("../middleware/verifyToken");
 const tripRoutes = express.Router();
 
 //  Create new trip
-tripRoutes.post("/",verifyToken, createTrip);
+tripRoutes.post( "/",
+  ensureAuthenticated,
+  upload.array("photos", 10),
+  createTrip);
 
 //  Get all trips
 // router.get("/", getAllTrips);

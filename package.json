@@ -14,14 +14,17 @@
   "dependencies": {
     "bcrypt": "^6.0.0",
     "body-parser": "^2.2.2",
+    "cloudinary": "^2.10.0",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "joi": "^18.1.2",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.5.0",
+    "multer": "^2.2.0",
     "nodemailer": "^8.0.5",
     "resend": "^6.17.1",
+    "streamifier": "^0.1.1",
     "uuid": "^14.0.0"
   }
 }

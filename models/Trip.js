@@ -40,7 +40,11 @@ const tripSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
-    photos: [String], // Array of image URLs or file paths
+    photos: [
+      {
+        type:String,
+      }
+    ], // Array of image URLs or file paths
     createdAt: {
       type: Date,
       default: Date.now,
