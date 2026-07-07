@@ -214,7 +214,7 @@ const likeTrip = async (req, res) => {
     console.log("User:", req.user);
     console.log("Trip ID:", req.params.id);
 
-    const trip = await Trip.findById(req.params.id);
+    const trip = await TripModel.findById(req.params.id);
 
     console.log("Trip:", trip);
 
