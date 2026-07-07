@@ -288,12 +288,7 @@ const googleLogin = async (req, res) => {
   try {
     const { name, email } = req.body;
 
-    if (!name || !email) {
-      return res.status(400).json({
-        success: false,
-        message: "Name and email are required",
-      });
-    }
+    console.log("Google User:", name, email);
 
     let user = await userModel.findOne({ email });
 
@@ -302,7 +297,6 @@ const googleLogin = async (req, res) => {
         name,
         email,
         isVerified: true,
-        provider: "google",
       });
     }
 
@@ -311,14 +305,11 @@ const googleLogin = async (req, res) => {
     res.status(200).json({
       success: true,
       token,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-      },
+      user,
     });
 
   } catch (error) {
+
     console.log("Google Login Error:", error);
 
     res.status(500).json({
