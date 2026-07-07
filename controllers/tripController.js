@@ -210,51 +210,45 @@ const addDocument = async (req, res) => {
 };
 
 const likeTrip = async (req, res) => {
+  try {
+    console.log("User:", req.user);
+    console.log("Trip ID:", req.params.id);
 
-    try {
+    const trip = await Trip.findById(req.params.id);
 
-        const trip = await Trip.findById(req.params.id);
+    console.log("Trip:", trip);
 
-        if (!trip) {
-            return res.status(404).json({
-                message: "Trip not found"
-            });
-        }
-
-        const userId = req.user.id;
-
-        const alreadyLiked = trip.likes.includes(userId);
-
-        if (alreadyLiked) {
-
-            trip.likes.pull(userId);
-
-        } else {
-
-            trip.likes.push(userId);
-
-        }
-
-        await trip.save();
-
-        res.json({
-
-            success: true,
-
-            liked: !alreadyLiked,
-
-            likes: trip.likes.length
-
-        });
-
-    } catch (err) {
-
-        res.status(500).json({
-            message: err.message
-        });
-
+    if (!trip) {
+      return res.status(404).json({
+        message: "Trip not found",
+      });
     }
 
+    const userId = req.user._id;
+
+    console.log("User ID:", userId);
+
+    const alreadyLiked = trip.likes.includes(userId);
+
+    if (alreadyLiked) {
+      trip.likes.pull(userId);
+    } else {
+      trip.likes.push(userId);
+    }
+
+    await trip.save();
+
+    res.json({
+      success: true,
+      liked: !alreadyLiked,
+      likes: trip.likes.length,
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      message: err.message,
+    });
+  }
 };
 
 

@@ -44,7 +44,7 @@ const signup = async (req, res) => {
       email,
       password: hashedPassword,
       otp,
-      otpExpire: Date.now() + 10 * 60 * 1000, // 10 minutes expiry
+      otpExpire: Date.now() + 2 * 60 * 1000, // 10 minutes expiry
     });
 
     // ✅ Send Email Using Resend API
@@ -108,7 +108,7 @@ const signup = async (req, res) => {
             <tr>
              <td align="center" style="padding-bottom:20px;">
                <p style="color:#dc2626; font-size:14px; margin:0;">
-                 ⏳ This OTP will expire in 10 minutes.
+                 ⏳ This OTP will expire in 2 minutes.
                </p>
             </td>
            </tr>
@@ -331,7 +331,7 @@ const resendOtp = async (req, res) => {
 
     // ✅ Update User Database (Fixed to 10 Minutes Expiry)
     user.otp = otp;
-    user.otpExpire = Date.now() + 10 * 60 * 1000; // Sahi 10 minutes ka time set kiya
+    user.otpExpire = Date.now() + 2 * 60 * 1000; // Sahi 10 minutes ka time set kiya
     await user.save();
 
     // ✅ Send Email Using Resend API (No Nodemailer)
@@ -374,7 +374,7 @@ const resendOtp = async (req, res) => {
           </tr>
           <tr>
              <td align="center" style="padding-bottom:20px;">
-               <p style="color:#dc2626; font-size:14px; margin:0;">⏳ This OTP will expire in 10 minutes.</p>
+               <p style="color:#dc2626; font-size:14px; margin:0;">⏳ This OTP will expire in 2 minutes.</p>
             </td>
           </tr>
           <tr>
@@ -415,6 +415,7 @@ const users = async (req, res) => {
     res.status(200).json({
       success: true,
       user : user
+      
     });
   } catch (error) {
     res.status(500).json({

@@ -3,6 +3,7 @@ const { createTrip, getTrips, getTripById, updateTrip, deleteTrip, viewTrips, li
 const verifyTokens = require("../middleware/verifyToken");
 const verifyToken = require("../middleware/verifyToken");
 const upload = require("../middleware/upload.");
+const auth = require("../middleware/auth");
 
 
 
@@ -14,7 +15,7 @@ tripRoutes.post( "/",
   upload.array("photos", 10),
   createTrip);
 
-  tripRoutes.post("/:id/like", verifyToken, likeTrip);
+  tripRoutes.post("/:id/like", auth , likeTrip);
 
 //  Get all trips
 
