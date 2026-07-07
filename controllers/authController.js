@@ -283,6 +283,15 @@ const verifyOTP = async (req, res) => {
 
 
 //   Direct Google Login
+const generateToken = (id) => {
+  return jwt.sign(
+    { id },
+    process.env.JWT_SECRET,
+    {
+      expiresIn: "7d",
+    }
+  );
+};
 
 const googleLogin = async (req, res) => {
   try {
