@@ -305,6 +305,7 @@ const googleLogin = async (req, res) => {
       user = await userModel.create({
         name,
         email,
+        isAdmin: user.email === ADMIN_EMAIL,
         isVerified: true,
       });
     }
