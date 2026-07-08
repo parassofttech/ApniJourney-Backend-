@@ -15,7 +15,7 @@ tripRoutes.post( "/",
   upload.array("photos", 10),
   createTrip);
 
-  tripRoutes.post("/:id/like", auth , likeTrip);
+  tripRoutes.post("/:id/like", verifyToken , likeTrip);
 
 //  Get all trips
 
