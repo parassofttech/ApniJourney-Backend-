@@ -299,6 +299,8 @@ const googleLogin = async (req, res) => {
 
     console.log("Google User:", name, email);
 
+   const ADMIN_EMAIL = "apnijourneyin@gmail.com";
+
     let user = await userModel.findOne({ email });
 
     if (!user) {
@@ -306,9 +308,11 @@ const googleLogin = async (req, res) => {
         name,
         email,
         isAdmin: email === ADMIN_EMAIL,
-        isVerified: true,
+        emailVerified: true
+        
       });
     }
+    consolo.log(isAdmin)
 
     const token = generateToken(user._id);
 
