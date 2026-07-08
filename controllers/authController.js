@@ -305,7 +305,7 @@ const googleLogin = async (req, res) => {
       user = await userModel.create({
         name,
         email,
-        isAdmin: user.email === ADMIN_EMAIL,
+        isAdmin: email === ADMIN_EMAIL,
         isVerified: true,
       });
     }
@@ -319,7 +319,6 @@ const googleLogin = async (req, res) => {
     });
 
   } catch (error) {
-
     console.log("Google Login Error:", error);
 
     res.status(500).json({
@@ -328,7 +327,6 @@ const googleLogin = async (req, res) => {
     });
   }
 };
-
 
 
 const resendOtp = async (req, res) => {
