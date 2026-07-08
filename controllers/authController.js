@@ -312,7 +312,7 @@ const googleLogin = async (req, res) => {
         
       });
     }
-    consolo.log(isAdmin)
+    
 
     const token = generateToken(user._id);
 
