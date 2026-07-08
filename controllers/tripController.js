@@ -26,6 +26,8 @@ const createTrip = async (req, res) => {
         message: "User not authorized",
       });
     }
+    console.log("Authorization Header:", req.headers.authorization);
+console.log("req.user:", req.user);
 
     const {
       name,
