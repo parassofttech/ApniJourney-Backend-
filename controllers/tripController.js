@@ -7,6 +7,14 @@ const uploadToCloudinary = (buffer) => {
     const stream = cloudinary.uploader.upload_stream(
       {
         folder: "ApniJourney",
+        transformation: [
+      {
+        quality: "auto",
+        fetch_format: "auto",
+        width: 1200,
+        crop: "limit",
+      },
+    ],
       },
       (error, result) => {
         if (error) return reject(error);
