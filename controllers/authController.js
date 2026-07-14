@@ -8,7 +8,7 @@ const { Resend } = require('resend');
 require("dotenv").config();
 
 // 2. Resend ko initialize karein
-const resend = new Resend(process.env.RESEND_API_KEY||" re_X3phJsEw_DGNAvBTYpSMmhwRoPTf69K36");
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 /* ================= SIGNUP ================= */
 const signup = async (req, res) => {
