@@ -532,6 +532,181 @@ const blockUser = async (req,res)=>{
 }
 
 
+
+
+
+
+const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    const user = await userModel.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+
+    await userModel.findOneAndUpdate(
+  { email },
+  {
+    otp,
+      expiresAt: new Date(Date.now() + 2 * 60 * 1000),
+    });
+
+    await resend.emails.send({
+      from: 'ApniJourney <noreply@apnijourney.com>', // <-- Yahan apna verified domain naam hi likhna
+      to: email,
+      subject: "Resend OTP Verification",
+      html: `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+</head>
+<body style="margin:0; padding:0; background:#f4f6f8; font-family:Arial, sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="padding:40px 0;">
+    <tr>
+      <td align="center">
+        <!-- Main Card -->
+        <table width="500" cellpadding="0" cellspacing="0" style="background:#ffffff; border-radius:12px; padding:40px; box-shadow:0 8px 25px rgba(0,0,0,0.08);">
+          <tr>
+            <td align="center" style="padding-bottom:20px;">
+              <h1 style="margin:0; color:#4f46e5;">ApniJourney</h1>
+              <p style="color:#888; margin-top:5px;">Resend Verification Code</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding-bottom:20px;">
+              <h2 style="margin:0; color:#111;">Your New OTP Code</h2>
+              <p style="color:#555; font-size:14px; margin-top:10px;">
+                As requested, here is your new verification code. Please use this OTP to secure your account.
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td align="center" style="padding:25px 0;">
+              <div style="display:inline-block; padding:15px 40px; background:linear-gradient(135deg,#6366f1,#4f46e5); color:#ffffff; font-size:28px; letter-spacing:6px; border-radius:8px; font-weight:bold;">
+                ${otp}
+              </div>
+            </td>
+          </tr>
+          <tr>
+             <td align="center" style="padding-bottom:20px;">
+               <p style="color:#dc2626; font-size:14px; margin:0;">⏳ This OTP will expire in 2 minutes.</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding-top:10px;">
+              <p style="color:#666; font-size:13px; line-height:1.6;">
+                🔐 For your security, do not share this OTP with anyone.
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+`,
+    });
+
+    res.json({
+      success: true,
+      message: "OTP sent successfully",
+    });
+
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+
+
+ const verifyForgotOTP = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+
+    const data = await userModel.findOne({ email });
+
+    if (!data) {
+      return res.status(400).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    if (data.otp !== otp) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid OTP",
+      });
+    }
+
+    if (data.expiresAt < new Date()) {
+      return res.status(400).json({
+        success: false,
+        message: "OTP Expired",
+      });
+    }
+
+    res.json({
+      success: true,
+      message: "OTP Verified",
+    });
+
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+
+
+
+ const resetPassword = async (req, res) => {
+  try {
+
+    const { email, password } = req.body;
+
+    const hash = await bcrypt.hash(password, 10);
+
+   
+
+await userModel.findOneAndUpdate(
+  { email },
+  {
+    password: hash,
+    otp: null,
+    otpExpire: null,
+  }
+);
+
+    res.json({
+      success: true,
+      message: "Password Updated Successfully",
+    });
+
+  } catch (err) {
+
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+
+  }
+};
+
+
 module.exports={  login,
   getProfile,
   verifyOTP,
@@ -539,5 +714,8 @@ module.exports={  login,
   googleLogin,
   resendOtp,users,
   deleteUser,
-  blockUser
+  blockUser,
+  forgotPassword,
+  verifyForgotOTP,
+  resetPassword
 };
